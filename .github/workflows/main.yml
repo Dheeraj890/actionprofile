@@ -15,7 +15,7 @@ jobs:
         run: mvn install
 
       - name: Print secret (masked)
-        run: echo "Secret is ${{ secrets.MY_SECRET }}"
+        run: echo "Secret is ${{ secrets.ACCESS_USER }}"
 
 
   Testing:

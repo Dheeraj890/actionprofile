@@ -36,11 +36,15 @@ jobs:
           name: vprofile-app
           path: target/*.war  
 
+      - name: Set image timestamp tag
+        run: echo "IMAGE_TAG=$(date -u +%Y%m%d%H%M%S)" >> $GITHUB_ENV
+
       - name: Build Docker image
         run: |
           # use repo root as context so `target/` is visible to the Dockerfile
           docker build -f Docker-files/app/Dockerfile \
             -t docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/vprofile:latest \
+            -t docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/vprofile:${{ env.IMAGE_TAG }} \
             .
 
       - name: Log in to Docker registry
@@ -53,6 +57,7 @@ jobs:
       - name: Push Docker image
         run: |
           docker push docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/vprofile:latest
+          docker push docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/vprofile:${{ env.IMAGE_TAG }}
 
 
       - name: Notify if Build Fails

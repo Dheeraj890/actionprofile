@@ -30,6 +30,12 @@ jobs:
       - name: Maven Build
         run: mvn install
 
+      - name: Upload Build Artifact (WAR)
+        uses: actions/upload-artifact@v4
+        with:
+          name: vprofile-app
+          path: target/*.war  
+
       - name: Build Docker image
         run: |
           # the repository stores Dockerfiles under Docker-files/app (adjust if using a different service)
@@ -48,11 +54,6 @@ jobs:
         run: |
           docker push docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/vprofile:latest
 
-      - name: Upload Build Artifact (WAR)
-        uses: actions/upload-artifact@v4
-        with:
-          name: vprofile-app
-          path: target/*.war
 
       - name: Notify if Build Fails
         if: failure()

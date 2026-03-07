@@ -136,11 +136,16 @@ jobs:
         id: login-ecr 
         uses: aws-actions/amazon-ecr-login@v2
 
+      - name: Set image timestamp tag
+        # combine commit SHA with UTC timestamp for unique tags
+        run: echo "IMAGE_TAG=${{ github.sha }}-$(date -u +%Y%m%d%H%M%S)" >> $GITHUB_ENV
+
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
+          # IMAGE_TAG is defined in a preceding step with SHA plus timestamp
+          IMAGE_TAG: ${{ env.IMAGE_TAG }}
         run: |
           docker build -f Docker-files/app/multistage/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
